@@ -22,7 +22,18 @@ const app = express();
 // ============================================
 // Security Middleware
 // ============================================
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            imgSrc: ["'self'", "data:", "https://img.vietqr.io"],
+            connectSrc: ["'self'", "https://img.vietqr.io"],
+        },
+    },
+}));
 app.use(cors({
     origin: config.nodeEnv === 'production'
         ? (process.env.CORS_ORIGIN || '').split(',').map(s => s.trim()).filter(Boolean)
