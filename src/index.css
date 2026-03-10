@@ -2203,20 +2203,22 @@ textarea.form-input {
 
 .admin-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
 }
 
 .admin-stat-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  text-align: center;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .stat-icon {
-  margin-bottom: 8px;
+  flex-shrink: 0;
 }
 
 .stat-icon.blue {
@@ -2240,14 +2242,14 @@ textarea.form-input {
 }
 
 .stat-value {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  line-height: 1.2;
 }
 
 .stat-label {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-muted);
 }
 
@@ -3736,19 +3738,40 @@ textarea.form-input {
   }
 
   /* Admin tabs compact */
+  /* Admin tabs scrollable on mobile */
   .admin-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
     gap: 2px;
     padding: 3px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .admin-tabs::-webkit-scrollbar {
+    display: none;
   }
 
   .admin-tab {
-    padding: 6px 8px;
+    flex: 0 0 auto;
+    padding: 6px 10px;
     font-size: 11px;
     gap: 3px;
+    white-space: nowrap;
   }
 
   .admin-tab svg {
     width: 14px;
     height: 14px;
+  }
+
+  /* Admin toolbar compact */
+  .admin-toolbar {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .admin-toolbar strong {
+    font-size: 14px;
   }
 }

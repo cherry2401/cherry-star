@@ -40,53 +40,44 @@ export default function AdminDashboard() {
             {/* Primary Stats */}
             <div className="admin-stats-grid">
                 <div className="admin-stat-card">
-                    <UserCheck size={40} className="stat-icon blue" />
-                    <div className="stat-value">{stats.totalUsers}</div>
-                    <div className="stat-label">Tổng Users</div>
+                    <UserCheck size={22} className="stat-icon blue" />
+                    <div><div className="stat-value">{stats.totalUsers}</div><div className="stat-label">Tổng Users</div></div>
                 </div>
                 <div className="admin-stat-card">
-                    <ShoppingCart size={40} className="stat-icon purple" />
-                    <div className="stat-value">{stats.totalOrders}</div>
-                    <div className="stat-label">Tổng Đơn</div>
+                    <ShoppingCart size={22} className="stat-icon purple" />
+                    <div><div className="stat-value">{stats.totalOrders}</div><div className="stat-label">Tổng Đơn</div></div>
                 </div>
                 <div className="admin-stat-card">
-                    <DollarSign size={40} className="stat-icon green" />
-                    <div className="stat-value">{stats.totalRevenue.toLocaleString()}đ</div>
-                    <div className="stat-label">Doanh thu</div>
+                    <DollarSign size={22} className="stat-icon green" />
+                    <div><div className="stat-value">{stats.totalRevenue.toLocaleString()}đ</div><div className="stat-label">Doanh thu</div></div>
                 </div>
                 <div className="admin-stat-card">
-                    <TrendingUp size={40} className="stat-icon orange" />
-                    <div className="stat-value">{stats.totalProfit.toLocaleString()}đ</div>
-                    <div className="stat-label">Lợi nhuận</div>
+                    <TrendingUp size={22} className="stat-icon orange" />
+                    <div><div className="stat-value">{stats.totalProfit.toLocaleString()}đ</div><div className="stat-label">Lợi nhuận</div></div>
                 </div>
                 <div className="admin-stat-card">
-                    <Wallet size={40} className="stat-icon teal" />
-                    <div className="stat-value">{stats.totalDeposits.toLocaleString()}đ</div>
-                    <div className="stat-label">Tổng nạp</div>
+                    <Wallet size={22} className="stat-icon teal" />
+                    <div><div className="stat-value">{stats.totalDeposits.toLocaleString()}đ</div><div className="stat-label">Tổng nạp</div></div>
                 </div>
             </div>
 
             {/* Operational Stats */}
-            <div className="admin-stats-grid" style={{ marginTop: 16 }}>
+            <div className="admin-stats-grid" style={{ marginTop: 10 }}>
                 <div className="admin-stat-card">
-                    <CalendarDays size={36} className="stat-icon blue" />
-                    <div className="stat-value">{stats.ordersToday}</div>
-                    <div className="stat-label">Đơn hôm nay</div>
+                    <CalendarDays size={20} className="stat-icon blue" />
+                    <div><div className="stat-value">{stats.ordersToday}</div><div className="stat-label">Đơn hôm nay</div></div>
                 </div>
                 <div className="admin-stat-card">
-                    <ShoppingCart size={36} className="stat-icon purple" />
-                    <div className="stat-value">{stats.ordersThisWeek}</div>
-                    <div className="stat-label">Đơn 7 ngày</div>
+                    <ShoppingCart size={20} className="stat-icon purple" />
+                    <div><div className="stat-value">{stats.ordersThisWeek}</div><div className="stat-label">Đơn 7 ngày</div></div>
                 </div>
                 <div className="admin-stat-card">
-                    <AlertTriangle size={36} className={`stat-icon ${stats.failedRate > 10 ? 'red' : 'green'}`} />
-                    <div className="stat-value">{stats.failedRate}%</div>
-                    <div className="stat-label">Tỉ lệ lỗi</div>
+                    <AlertTriangle size={20} className={`stat-icon ${stats.failedRate > 10 ? 'red' : 'green'}`} />
+                    <div><div className="stat-value">{stats.failedRate}%</div><div className="stat-label">Tỉ lệ lỗi</div></div>
                 </div>
                 <div className="admin-stat-card">
-                    <UserCog size={36} className="stat-icon teal" />
-                    <div className="stat-value">{stats.activeUsers7d}</div>
-                    <div className="stat-label">User hoạt động (7 ngày)</div>
+                    <UserCog size={20} className="stat-icon teal" />
+                    <div><div className="stat-value">{stats.activeUsers7d}</div><div className="stat-label">User hoạt động (7 ngày)</div></div>
                 </div>
             </div>
 
