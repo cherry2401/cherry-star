@@ -3633,3 +3633,33 @@ textarea.form-input {
   padding: 4px 6px;
   font-size: 12px;
 }
+
+/* ============================================
+   Mobile Responsive
+   ============================================ */
+@media (max-width: 480px) {
+  .header-auth-buttons {
+    gap: 4px;
+  }
+
+  .header-login-btn,
+  .header-register-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+    gap: 4px;
+  }
+
+  .header-login-btn svg,
+  .header-register-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .header-title {
+    font-size: 14px;
+  }
+
+  .header-subtitle {
+    display: none;
+  }
+}
