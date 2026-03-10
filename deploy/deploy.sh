@@ -13,6 +13,12 @@ echo "=========================================="
 echo "  🚀 CHERRY STAR — Deploying..."
 echo "=========================================="
 
+# 0. Pull latest code from GitHub
+echo "📥 [0/4] Pulling latest code..."
+cd $APP_DIR
+git pull
+echo "   ✅ Code updated"
+
 # 1. Install frontend dependencies & build
 echo "📦 [1/4] Building frontend..."
 cd $APP_DIR
