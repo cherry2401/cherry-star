@@ -47,7 +47,7 @@ router.post('/register', async (req: Request, res: Response) => {
 
     // Check if username/email/phone already exists
     const existing = await query(
-        'SELECT id FROM users WHERE username = $1 OR (email = $2 AND email IS NOT NULL) OR (phone = $3 AND phone IS NOT NULL)',
+        'SELECT id FROM users WHERE LOWER(username) = LOWER($1) OR (email = $2 AND email IS NOT NULL) OR (phone = $3 AND phone IS NOT NULL)',
         [username, email || null, phone || null]
     );
 
@@ -106,7 +106,7 @@ router.post('/login', async (req: Request, res: Response) => {
     const result = await query(
         `SELECT id, username, email, phone, password_hash, display_name, balance, role, is_active
          FROM users
-         WHERE username = $1 OR email = $1 OR phone = $1`,
+         WHERE LOWER(username) = LOWER($1) OR email = $1 OR phone = $1`,
         [identifier]
     );
     const user = result.rows[0];
