@@ -122,7 +122,7 @@ export async function initDatabase() {
         CREATE INDEX IF NOT EXISTS idx_user_notes_user ON user_notes(user_id);
     `);
 
-    // Seed admin user if not exists
+    // Seed admin user if not exists, or sync password from .env
     const adminCheck = await query('SELECT id FROM users WHERE username = $1', [config.admin.username]);
     if (adminCheck.rows.length === 0) {
         const hash = await bcrypt.hash(config.admin.password, 10);
@@ -132,6 +132,13 @@ export async function initDatabase() {
             [config.admin.username, hash, config.admin.username]
         );
         console.log(`✅ Admin user "${config.admin.username}" created`);
+    } else {
+        // Always sync admin password from .env on startup
+        const hash = await bcrypt.hash(config.admin.password, 10);
+        await query(
+            'UPDATE users SET password_hash = $1 WHERE username = $2',
+            [hash, config.admin.username]
+        );
     }
 
     console.log('✅ Database initialized');

@@ -3704,4 +3704,51 @@ textarea.form-input {
     width: 14px;
     height: 14px;
   }
+
+  /* Admin stats compact */
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .admin-stat-card {
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+  }
+
+  .admin-stat-card .stat-icon {
+    margin-bottom: 0;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .admin-stat-card .stat-value {
+    font-size: 16px;
+    margin-bottom: 0;
+  }
+
+  .admin-stat-card .stat-label {
+    font-size: 11px;
+  }
+
+  /* Admin tabs compact */
+  .admin-tabs {
+    gap: 2px;
+    padding: 3px;
+  }
+
+  .admin-tab {
+    padding: 6px 8px;
+    font-size: 11px;
+    gap: 3px;
+  }
+
+  .admin-tab svg {
+    width: 14px;
+    height: 14px;
+  }
 }
