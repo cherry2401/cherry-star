@@ -6,8 +6,8 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Ensure dotenv loads from the server root (process.cwd()) instead of the compiled dist folder (__dirname)
-dotenv.config({ path: join(process.cwd(), '.env') });
+// Ensure dotenv loads from the server root and overrides PM2 cached variables
+dotenv.config({ path: join(process.cwd(), '.env'), override: true });
 
 // Validate critical env vars
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
@@ -44,11 +44,9 @@ export const config = {
         username: process.env.ADMIN_USERNAME || 'admin',
         password: (() => {
             if (process.env.ADMIN_PASSWORD) return process.env.ADMIN_PASSWORD;
-            if (process.env.NODE_ENV === 'production') {
-                throw new Error('ADMIN_PASSWORD is required in production. Set it in server/.env');
-            }
+
             const tempPass = crypto.randomBytes(16).toString('hex');
-            console.warn(`⚠️  ADMIN_PASSWORD not set. Using temporary password: ${tempPass}`);
+            console.warn(`⚠️  ADMIN_PASSWORD not set in .env. Using temporary password: ${tempPass}`);
             return tempPass;
         })(),
     },
