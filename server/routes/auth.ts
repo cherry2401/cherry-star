@@ -340,4 +340,106 @@ router.post('/reset-password', async (req: Request, res: Response) => {
     res.json({ success: true, message: 'Đặt lại mật khẩu thành công! Bạn có thể đăng nhập ngay.' });
 });
 
+// ============================================
+// POST /auth/google — Google OAuth Sign-In
+// ============================================
+router.post('/google', async (req: Request, res: Response) => {
+    const { credential } = req.body;
+
+    if (!credential) {
+        res.status(400).json({ success: false, message: 'Token không hợp lệ' });
+        return;
+    }
+
+    if (!config.google.clientId) {
+        res.status(500).json({ success: false, message: 'Google Sign-In chưa được cấu hình' });
+        return;
+    }
+
+    try {
+        // Verify Google ID token
+        const { OAuth2Client } = await import('google-auth-library');
+        const client = new OAuth2Client(config.google.clientId);
+        const ticket = await client.verifyIdToken({
+            idToken: credential,
+            audience: config.google.clientId,
+        });
+        const payload = ticket.getPayload();
+
+        if (!payload || !payload.sub || !payload.email) {
+            res.status(400).json({ success: false, message: 'Token Google không hợp lệ' });
+            return;
+        }
+
+        const googleId = payload.sub;
+        const email = payload.email;
+        const name = payload.name || email.split('@')[0];
+
+        // Check if user with this google_id exists
+        let userResult = await query(
+            'SELECT id, username, email, display_name, balance, role, is_active FROM users WHERE google_id = $1',
+            [googleId]
+        );
+
+        let user = userResult.rows[0];
+
+        if (!user) {
+            // Check if user with same email exists (link accounts)
+            userResult = await query(
+                'SELECT id, username, email, display_name, balance, role, is_active, google_id FROM users WHERE email = $1',
+                [email]
+            );
+            user = userResult.rows[0];
+
+            if (user) {
+                // Link Google ID to existing account
+                await query('UPDATE users SET google_id = $1, updated_at = NOW() WHERE id = $2', [googleId, user.id]);
+            } else {
+                // Create new user
+                const username = email.split('@')[0] + '_' + googleId.slice(-4);
+                const result = await query(
+                    `INSERT INTO users (username, email, google_id, display_name)
+                     VALUES ($1, $2, $3, $4) RETURNING id, username, email, display_name, balance, role, is_active`,
+                    [username, email, googleId, name]
+                );
+                user = result.rows[0];
+            }
+        }
+
+        if (!user.is_active) {
+            res.status(403).json({ success: false, message: 'Tài khoản đã bị khóa' });
+            return;
+        }
+
+        // Update last login
+        await query('UPDATE users SET last_login_at = NOW() WHERE id = $1', [user.id]);
+
+        // Generate JWT
+        const token = jwt.sign(
+            { id: user.id, username: user.username, role: user.role },
+            config.jwt.secret,
+            { expiresIn: config.jwt.expiresIn }
+        );
+
+        res.json({
+            success: true,
+            message: 'Đăng nhập thành công!',
+            data: {
+                token,
+                user: {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    display_name: user.display_name,
+                    balance: user.balance,
+                    role: user.role,
+                },
+            },
+        });
+    } catch (err: any) {
+        console.error('Google auth error:', err);
+        res.status(401).json({ success: false, message: 'Xác thực Google thất bại' });
+    }
+});
+
 export default router;

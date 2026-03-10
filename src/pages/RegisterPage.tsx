@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { UserPlus, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
+import GoogleSignInButton from '../components/GoogleSignInButton';
 
 type RegisterMethod = 'username' | 'email' | 'phone';
 
@@ -163,6 +164,8 @@ export default function RegisterPage() {
                         )}
                     </button>
                 </form>
+
+                <GoogleSignInButton text="signup_with" />
 
                 <div className="auth-footer">
                     <p>Đã có tài khoản? <Link to="/login">Đăng nhập</Link></p>

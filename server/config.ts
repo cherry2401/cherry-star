@@ -59,5 +59,9 @@ export const config = {
         from: process.env.SMTP_FROM || process.env.SMTP_USER || '',
     },
 
+    google: {
+        clientId: process.env.GOOGLE_CLIENT_ID || '',
+    },
+
     appUrl: process.env.APP_URL || `http://localhost:${process.env.PORT || '3001'}`,
 };

@@ -21,6 +21,7 @@ interface AuthContextType {
     register: (data: RegisterData) => Promise<void>;
     logout: () => void;
     refreshUser: () => Promise<void>;
+    setAuthData: (token: string, user: User) => void;
 }
 
 interface RegisterData {
@@ -87,6 +88,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
     };
 
+    const setAuthData = (newToken: string, newUser: User) => {
+        localStorage.setItem('token', newToken);
+        setToken(newToken);
+        setUser(newUser);
+    };
+
     return (
         <AuthContext.Provider value={{
             user,
@@ -98,6 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             register,
             logout,
             refreshUser,
+            setAuthData,
         }}>
             {children}
         </AuthContext.Provider>

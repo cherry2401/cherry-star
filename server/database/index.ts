@@ -29,7 +29,8 @@ export async function initDatabase() {
             username      TEXT UNIQUE NOT NULL,
             email         TEXT UNIQUE,
             phone         TEXT UNIQUE,
-            password_hash TEXT NOT NULL,
+            password_hash TEXT,
+            google_id     TEXT UNIQUE,
             display_name  TEXT,
             balance       INTEGER DEFAULT 0,
             role          TEXT DEFAULT 'user',
@@ -38,6 +39,9 @@ export async function initDatabase() {
             created_at    TIMESTAMPTZ DEFAULT NOW(),
             updated_at    TIMESTAMPTZ DEFAULT NOW()
         );
+
+        -- Migration: add google_id if missing
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id TEXT UNIQUE;
 
         CREATE TABLE IF NOT EXISTS transactions (
             id            SERIAL PRIMARY KEY,
