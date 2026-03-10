@@ -3662,4 +3662,46 @@ textarea.form-input {
   .header-subtitle {
     display: none;
   }
+
+  /* Balance card compact */
+  .balance-card {
+    padding: 8px 10px;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .balance-card-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .balance-card-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .balance-label {
+    font-size: 11px;
+  }
+
+  .balance-amount {
+    font-size: 16px;
+  }
+
+  /* Deposit tabs compact */
+  .deposit-tabs {
+    padding: 4px;
+    margin-bottom: 12px;
+  }
+
+  .deposit-tab {
+    padding: 8px 8px;
+    font-size: 12px;
+    gap: 4px;
+  }
+
+  .deposit-tab svg {
+    width: 14px;
+    height: 14px;
+  }
 }
