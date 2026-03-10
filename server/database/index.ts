@@ -114,12 +114,22 @@ export async function initDatabase() {
             created_at  TIMESTAMPTZ DEFAULT NOW()
         );
 
+        CREATE TABLE IF NOT EXISTS password_reset_tokens (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            token VARCHAR(128) NOT NULL UNIQUE,
+            expires_at TIMESTAMPTZ NOT NULL,
+            used BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMPTZ DEFAULT NOW()
+        );
+
         CREATE INDEX IF NOT EXISTS idx_transactions_user ON transactions(user_id);
         CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
         CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
         CREATE INDEX IF NOT EXISTS idx_audit_created ON admin_audit_log(created_at DESC);
         CREATE INDEX IF NOT EXISTS idx_audit_action ON admin_audit_log(action);
         CREATE INDEX IF NOT EXISTS idx_user_notes_user ON user_notes(user_id);
+        CREATE INDEX IF NOT EXISTS idx_reset_tokens_token ON password_reset_tokens(token);
     `);
 
     // Seed admin user if not exists, or sync password from .env

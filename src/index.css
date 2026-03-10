@@ -1718,6 +1718,45 @@ textarea.form-input {
 
 .auth-remember {
   margin: 4px 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.forgot-link {
+  color: var(--accent-blue);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.forgot-link:hover {
+  opacity: 0.8;
+}
+
+.forgot-success {
+  text-align: center;
+  padding: 16px 0;
+}
+
+.forgot-success-icon {
+  color: var(--accent-blue);
+  margin-bottom: 12px;
+}
+
+.forgot-success h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.forgot-success p {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
 }
 
 .remember-label {

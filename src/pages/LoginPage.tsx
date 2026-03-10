@@ -88,6 +88,7 @@ export default function LoginPage() {
                             />
                             <span>Ghi nhớ đăng nhập</span>
                         </label>
+                        <Link to="/forgot-password" className="forgot-link">Quên mật khẩu?</Link>
                     </div>
 
                     <button type="submit" className="btn-primary auth-submit" disabled={loading}>

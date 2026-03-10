@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, Minus, Download, Trash2, Eye } from 'lucide-react';
+import { Search, Plus, Minus, Download, Trash2, Eye, KeyRound } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import type { AdminUser } from '../../types/admin';
@@ -11,6 +11,8 @@ export default function AdminUsers() {
     const [depositModal, setDepositModal] = useState<{ userId: number; username: string; mode: 'add' | 'deduct' } | null>(null);
     const [depositAmount, setDepositAmount] = useState('');
     const [deleteConfirm, setDeleteConfirm] = useState<{ userId: number; username: string } | null>(null);
+    const [resetPwModal, setResetPwModal] = useState<{ userId: number; username: string } | null>(null);
+    const [newPassword, setNewPassword] = useState('');
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
     useEffect(() => { loadUsers(); }, []);
@@ -63,6 +65,23 @@ export default function AdminUsers() {
             toast.success(currentActive ? 'Đã khóa tài khoản' : 'Đã mở khóa');
             loadUsers();
         } catch { toast.error('Lỗi cập nhật'); }
+    };
+
+    const handleResetPassword = async () => {
+        if (!resetPwModal || !newPassword || newPassword.length < 6) {
+            toast.error('Mật khẩu phải ít nhất 6 ký tự');
+            return;
+        }
+        try {
+            const { data } = await api.post(`/admin/users/${resetPwModal.userId}/reset-password`, { new_password: newPassword });
+            if (data.success) {
+                toast.success(data.message);
+                setResetPwModal(null);
+                setNewPassword('');
+            }
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Lỗi đặt lại mật khẩu');
+        }
     };
 
     const exportCsv = async () => {
@@ -174,6 +193,13 @@ export default function AdminUsers() {
                                         >
                                             <Trash2 size={14} />
                                         </button>
+                                        <button
+                                            className="btn-sm"
+                                            onClick={() => setResetPwModal({ userId: u.id, username: u.username })}
+                                            title="Đặt lại mật khẩu"
+                                        >
+                                            <KeyRound size={14} />
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -240,6 +266,34 @@ export default function AdminUsers() {
                             <button className="btn-secondary" onClick={() => setDeleteConfirm(null)}>Hủy</button>
                             <button className="btn-danger" onClick={handleDeleteUser}>
                                 <Trash2 size={16} /> Xóa
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Reset password modal */}
+            {resetPwModal && (
+                <div className="modal-overlay" onClick={() => { setResetPwModal(null); setNewPassword(''); }}>
+                    <div className="modal-card" onClick={e => e.stopPropagation()}>
+                        <h3>
+                            Đặt lại mật khẩu cho <strong>{resetPwModal.username}</strong>
+                        </h3>
+                        <div className="form-group" style={{ marginTop: 16 }}>
+                            <label className="form-label">Mật khẩu mới (ít nhất 6 ký tự)</label>
+                            <input
+                                type="text"
+                                className="form-input"
+                                placeholder="Nhập mật khẩu mới"
+                                value={newPassword}
+                                onChange={e => setNewPassword(e.target.value)}
+                                autoFocus
+                            />
+                        </div>
+                        <div className="modal-actions">
+                            <button className="btn-secondary" onClick={() => { setResetPwModal(null); setNewPassword(''); }}>Hủy</button>
+                            <button className="btn-primary" onClick={handleResetPassword}>
+                                <KeyRound size={16} /> Đặt lại
                             </button>
                         </div>
                     </div>

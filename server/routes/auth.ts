@@ -247,4 +247,97 @@ router.put('/password', authRequired, async (req: AuthRequest, res: Response) =>
     res.json({ success: true, message: 'Đổi mật khẩu thành công!' });
 });
 
+// ============================================
+// POST /auth/forgot-password
+// ============================================
+router.post('/forgot-password', async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    if (!email) {
+        res.status(400).json({ success: false, message: 'Vui lòng nhập email' });
+        return;
+    }
+
+    // Always return success to prevent email enumeration
+    const successMsg = 'Nếu email tồn tại trong hệ thống, bạn sẽ nhận được link đặt lại mật khẩu.';
+
+    const result = await query(
+        'SELECT id, username, email FROM users WHERE email = $1 AND is_active = true',
+        [email]
+    );
+    const user = result.rows[0];
+
+    if (!user) {
+        // Don't reveal if email exists
+        res.json({ success: true, message: successMsg });
+        return;
+    }
+
+    // Generate secure token
+    const crypto = await import('crypto');
+    const token = crypto.randomBytes(48).toString('hex');
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
+
+    // Invalidate old tokens for this user
+    await query('UPDATE password_reset_tokens SET used = true WHERE user_id = $1 AND used = false', [user.id]);
+
+    // Store new token
+    await query(
+        'INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
+        [user.id, token, expiresAt]
+    );
+
+    // Send email
+    const { sendResetEmail } = await import('../mailer.js');
+    const resetLink = `${config.appUrl}/reset-password?token=${token}`;
+    const sent = await sendResetEmail(user.email, resetLink, user.username);
+
+    if (!sent) {
+        console.warn('Email not sent - SMTP not configured or failed');
+    }
+
+    res.json({ success: true, message: successMsg });
+});
+
+// ============================================
+// POST /auth/reset-password
+// ============================================
+router.post('/reset-password', async (req: Request, res: Response) => {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+        res.status(400).json({ success: false, message: 'Token và mật khẩu mới là bắt buộc' });
+        return;
+    }
+
+    if (password.length < 6) {
+        res.status(400).json({ success: false, message: 'Mật khẩu phải ít nhất 6 ký tự' });
+        return;
+    }
+
+    // Find valid token
+    const result = await query(
+        `SELECT t.id, t.user_id, u.username FROM password_reset_tokens t
+         JOIN users u ON u.id = t.user_id
+         WHERE t.token = $1 AND t.used = false AND t.expires_at > NOW() AND u.is_active = true`,
+        [token]
+    );
+
+    if (result.rows.length === 0) {
+        res.status(400).json({ success: false, message: 'Link đặt lại đã hết hạn hoặc không hợp lệ' });
+        return;
+    }
+
+    const { id: tokenId, user_id: userId } = result.rows[0];
+
+    // Update password
+    const hash = await bcrypt.hash(password, 10);
+    await query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [hash, userId]);
+
+    // Mark token as used
+    await query('UPDATE password_reset_tokens SET used = true WHERE id = $1', [tokenId]);
+
+    res.json({ success: true, message: 'Đặt lại mật khẩu thành công! Bạn có thể đăng nhập ngay.' });
+});
+
 export default router;

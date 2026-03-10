@@ -792,4 +792,32 @@ router.delete('/users/notes/:noteId', async (req: AuthRequest, res: Response) =>
     res.json({ success: true, message: 'Đã xóa ghi chú' });
 });
 
+// ============================================
+// POST /admin/users/:id/reset-password — Admin reset user password
+// ============================================
+router.post('/users/:id/reset-password', async (req: AuthRequest, res: Response) => {
+    const userId = parseInt(req.params.id as string);
+    const { new_password } = req.body;
+
+    if (!new_password || new_password.length < 6) {
+        res.status(400).json({ success: false, message: 'Mật khẩu mới phải ít nhất 6 ký tự' });
+        return;
+    }
+
+    // Verify user exists
+    const userResult = await query('SELECT id, username FROM users WHERE id = $1', [userId]);
+    if (userResult.rows.length === 0) {
+        res.status(404).json({ success: false, message: 'User không tồn tại' });
+        return;
+    }
+
+    const user = userResult.rows[0];
+    const hash = await bcrypt.hash(new_password, 10);
+    await query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [hash, userId]);
+
+    await logAdminAction(req, 'reset_password', 'user', String(userId), { username: user.username });
+
+    res.json({ success: true, message: `Đã đặt lại mật khẩu cho ${user.username}` });
+});
+
 export default router;
