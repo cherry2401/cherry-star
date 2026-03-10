@@ -29,7 +29,7 @@ export default function LoginPage() {
             // In a real app, you'd handle rememberMe here
             navigate(from, { replace: true });
         } catch (err: any) {
-            toast.error(err.response?.data?.message || err.message || 'Đăng nhập thất bại');
+            toast.error(err.response?.data?.message || 'Đăng nhập thất bại');
         } finally {
             setLoading(false);
         }
