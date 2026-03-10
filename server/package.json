@@ -1,0 +1,31 @@
+{
+    "name": "autolike-server",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "tsx watch index.ts",
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "seed": "tsx database/seed.ts"
+    },
+    "dependencies": {
+        "axios": "^1.13.5",
+        "bcrypt": "^6.0.0",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.7",
+        "express": "^4.21.2",
+        "express-rate-limit": "^8.2.1",
+        "helmet": "^8.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "pg": "^8.20.0"
+    },
+    "devDependencies": {
+        "@types/bcrypt": "^5.0.2",
+        "@types/cors": "^2.8.17",
+        "@types/express": "^5.0.0",
+        "@types/jsonwebtoken": "^9.0.7",
+        "@types/pg": "^8.18.0",
+        "tsx": "^4.19.2",
+        "typescript": "~5.9.3"
+    }
+}

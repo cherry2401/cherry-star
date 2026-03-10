@@ -1,0 +1,250 @@
+import { Router, Request, Response } from 'express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { config } from '../config.js';
+import { query } from '../database/index.js';
+import { authRequired, AuthRequest } from '../middleware/auth.js';
+
+const router = Router();
+
+// ============================================
+// POST /auth/register
+// ============================================
+router.post('/register', async (req: Request, res: Response) => {
+    const { username, password, email, phone, display_name } = req.body;
+
+    // Validate required fields
+    if (!username || !password) {
+        res.status(400).json({ success: false, message: 'Username và mật khẩu là bắt buộc' });
+        return;
+    }
+    if (username.length < 3) {
+        res.status(400).json({ success: false, message: 'Username phải ít nhất 3 ký tự' });
+        return;
+    }
+    if (password.length < 6) {
+        res.status(400).json({ success: false, message: 'Mật khẩu phải ít nhất 6 ký tự' });
+        return;
+    }
+
+    // Validate email format
+    if (email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            res.status(400).json({ success: false, message: 'Email không đúng định dạng' });
+            return;
+        }
+    }
+
+    // Validate phone format (Vietnamese: 10 digits starting with 0)
+    if (phone) {
+        const phoneRegex = /^0\d{9}$/;
+        if (!phoneRegex.test(phone)) {
+            res.status(400).json({ success: false, message: 'Số điện thoại không hợp lệ (10 số, bắt đầu bằng 0)' });
+            return;
+        }
+    }
+
+    // Check if username/email/phone already exists
+    const existing = await query(
+        'SELECT id FROM users WHERE username = $1 OR (email = $2 AND email IS NOT NULL) OR (phone = $3 AND phone IS NOT NULL)',
+        [username, email || null, phone || null]
+    );
+
+    if (existing.rows.length > 0) {
+        res.status(400).json({ success: false, message: 'Username, email hoặc SĐT đã được sử dụng' });
+        return;
+    }
+
+    // Create user
+    const hash = await bcrypt.hash(password, 10);
+    const result = await query(
+        `INSERT INTO users (username, password_hash, email, phone, display_name)
+         VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+        [username, hash, email || null, phone || null, display_name || username]
+    );
+
+    const userId = result.rows[0].id;
+
+    // Generate JWT
+    const token = jwt.sign(
+        { id: userId, username, role: 'user' },
+        config.jwt.secret,
+        { expiresIn: config.jwt.expiresIn }
+    );
+
+    res.json({
+        success: true,
+        message: 'Đăng ký thành công!',
+        data: {
+            token,
+            user: {
+                id: userId,
+                username,
+                email: email || null,
+                phone: phone || null,
+                display_name: display_name || username,
+                balance: 0,
+                role: 'user',
+            },
+        },
+    });
+});
+
+// ============================================
+// POST /auth/login
+// ============================================
+router.post('/login', async (req: Request, res: Response) => {
+    const { identifier, password } = req.body;
+
+    if (!identifier || !password) {
+        res.status(400).json({ success: false, message: 'Vui lòng nhập tài khoản và mật khẩu' });
+        return;
+    }
+
+    // Auto-detect: username, email, or phone
+    const result = await query(
+        `SELECT id, username, email, phone, password_hash, display_name, balance, role, is_active
+         FROM users
+         WHERE username = $1 OR email = $1 OR phone = $1`,
+        [identifier]
+    );
+    const user = result.rows[0];
+
+    // Unified error message to prevent username enumeration
+    const invalidCredentials = 'Tài khoản hoặc mật khẩu không đúng';
+
+    if (!user) {
+        res.status(401).json({ success: false, message: invalidCredentials });
+        return;
+    }
+    if (!user.is_active) {
+        res.status(403).json({ success: false, message: 'Tài khoản đã bị khóa' });
+        return;
+    }
+
+    const passwordValid = await bcrypt.compare(password, user.password_hash);
+    if (!passwordValid) {
+        res.status(401).json({ success: false, message: invalidCredentials });
+        return;
+    }
+
+    // Generate JWT
+    const token = jwt.sign(
+        { id: user.id, username: user.username, role: user.role },
+        config.jwt.secret,
+        { expiresIn: config.jwt.expiresIn }
+    );
+
+    // Update last login timestamp
+    await query('UPDATE users SET last_login_at = NOW() WHERE id = $1', [user.id]);
+
+    res.json({
+        success: true,
+        message: 'Đăng nhập thành công!',
+        data: {
+            token,
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                phone: user.phone,
+                display_name: user.display_name,
+                balance: user.balance,
+                role: user.role,
+            },
+        },
+    });
+});
+
+// ============================================
+// GET /auth/me
+// ============================================
+router.get('/me', authRequired, async (req: AuthRequest, res: Response) => {
+    const result = await query(
+        `SELECT id, username, email, phone, display_name, balance, role, created_at
+         FROM users WHERE id = $1`,
+        [req.user!.id]
+    );
+    const user = result.rows[0];
+
+    if (!user) {
+        res.status(404).json({ success: false, message: 'User không tồn tại' });
+        return;
+    }
+
+    res.json({ success: true, data: user });
+});
+
+// ============================================
+// PUT /auth/profile — Update profile info
+// ============================================
+router.put('/profile', authRequired, async (req: AuthRequest, res: Response) => {
+    const userId = req.user!.id;
+    const { display_name, email, phone } = req.body;
+
+    // Validate email format
+    if (email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            res.status(400).json({ success: false, message: 'Email không đúng định dạng' });
+            return;
+        }
+        const dup = await query('SELECT id FROM users WHERE email = $1 AND id != $2', [email, userId]);
+        if (dup.rows.length > 0) { res.status(400).json({ success: false, message: 'Email đã được sử dụng' }); return; }
+    }
+
+    // Validate phone format (Vietnamese: 10 digits starting with 0)
+    if (phone) {
+        const phoneRegex = /^0\d{9}$/;
+        if (!phoneRegex.test(phone)) {
+            res.status(400).json({ success: false, message: 'Số điện thoại không hợp lệ (10 số, bắt đầu bằng 0)' });
+            return;
+        }
+        const dup = await query('SELECT id FROM users WHERE phone = $1 AND id != $2', [phone, userId]);
+        if (dup.rows.length > 0) { res.status(400).json({ success: false, message: 'Số điện thoại đã được sử dụng' }); return; }
+    }
+
+    await query(
+        `UPDATE users SET display_name = $1, email = $2, phone = $3, updated_at = NOW()
+         WHERE id = $4`,
+        [display_name || null, email || null, phone || null, userId]
+    );
+
+    const updated = await query(
+        'SELECT id, username, email, phone, display_name, balance, role, created_at FROM users WHERE id = $1',
+        [userId]
+    );
+    res.json({ success: true, message: 'Cập nhật thành công!', data: updated.rows[0] });
+});
+
+// ============================================
+// PUT /auth/password — Change password
+// ============================================
+router.put('/password', authRequired, async (req: AuthRequest, res: Response) => {
+    const userId = req.user!.id;
+    const { current_password, new_password } = req.body;
+
+    if (!current_password || !new_password) {
+        res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
+        return;
+    }
+    if (new_password.length < 6) {
+        res.status(400).json({ success: false, message: 'Mật khẩu mới phải ít nhất 6 ký tự' });
+        return;
+    }
+
+    const result = await query('SELECT password_hash FROM users WHERE id = $1', [userId]);
+    const user = result.rows[0];
+    const valid = await bcrypt.compare(current_password, user.password_hash);
+    if (!valid) {
+        res.status(400).json({ success: false, message: 'Mật khẩu hiện tại không đúng' });
+        return;
+    }
+
+    const newHash = await bcrypt.hash(new_password, 10);
+    await query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [newHash, userId]);
+    res.json({ success: true, message: 'Đổi mật khẩu thành công!' });
+});
+
+export default router;

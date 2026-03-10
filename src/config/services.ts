@@ -1,0 +1,312 @@
+import type { ServiceConfig } from '../types';
+
+export const facebookServices: ServiceConfig[] = [
+    {
+        id: 'like-gia-re',
+        name: 'Tăng Like Bài Viết',
+        description: 'Tăng like bài viết với nhiều gói dịch vụ, hỗ trợ chọn cảm xúc',
+        endpoint: '/api/facebook-like-gia-re/buy',
+        icon: 'ThumbsUp',
+        color: '#3b82f6',
+        fields: [
+            { key: 'object_id', label: 'ID bài viết', type: 'text', placeholder: 'Nhập ID hoặc link bài viết', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Nhập số lượng like', required: true, min: 10 },
+            { key: 'object_type', label: 'Chọn cảm xúc', type: 'reaction', placeholder: '', required: false },
+        ],
+    },
+    {
+        id: 'like-chat-luong',
+        name: 'Like Bài Viết Sale',
+        description: 'Like bài viết giá sale, tiết kiệm chi phí',
+        endpoint: '/api/facebook-like-chat-luong/buy',
+        icon: 'Heart',
+        color: '#ec4899',
+        fields: [
+            { key: 'object_id', label: 'ID bài viết', type: 'text', placeholder: 'Nhập ID bài viết', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Nhập số lượng', required: true, min: 10 },
+            { key: 'object_type', label: 'Chọn cảm xúc', type: 'reaction', placeholder: '', required: false },
+        ],
+    },
+    {
+        id: 'like-comment',
+        name: 'Like Bình Luận',
+        description: 'Tăng like cho bình luận trên bài viết',
+        endpoint: '/api/facebook-like-binh-luan/buy',
+        icon: 'MessageCircleHeart',
+        color: '#f59e0b',
+        fields: [
+            { key: 'object_id', label: 'ID bình luận', type: 'text', placeholder: 'Nhập ID bình luận', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Nhập số lượng like', required: true, min: 10 },
+        ],
+    },
+    {
+        id: 'comment',
+        name: 'Tăng Bình Luận',
+        description: 'Buff bình luận tùy chỉnh nội dung cho bài viết',
+        endpoint: '/api/facebook-binh-luan/buy',
+        icon: 'MessageSquareText',
+        color: '#10b981',
+        fields: [
+            { key: 'object_id', label: 'ID bài viết', type: 'text', placeholder: 'Nhập ID bài viết', required: true },
+            { key: 'list_message', label: 'Nội dung bình luận', type: 'textarea', placeholder: 'Mỗi dòng là 1 bình luận\nVD: Hay quá!\nTuyệt vời!', required: true },
+        ],
+    },
+    {
+        id: 'follow',
+        name: 'Tăng Follow',
+        description: 'Tăng người theo dõi cho trang cá nhân',
+        endpoint: '/api/facebook-follow/buy',
+        icon: 'UserPlus',
+        color: '#6366f1',
+        fields: [
+            { key: 'object_id', label: 'ID tài khoản', type: 'text', placeholder: 'Nhập UID tài khoản Facebook', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Nhập số lượng follow', required: true, min: 10 },
+        ],
+    },
+    {
+        id: 'like-page',
+        name: 'Like + Follow Page',
+        description: 'Tăng like và follow cho Fanpage',
+        endpoint: '/api/facebook-like-page/buy',
+        icon: 'Flag',
+        color: '#8b5cf6',
+        fields: [
+            { key: 'object_id', label: 'ID Fanpage', type: 'text', placeholder: 'Nhập ID Fanpage', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Nhập số lượng', required: true, min: 10 },
+        ],
+    },
+    {
+        id: 'mem-group',
+        name: 'Tăng Mem Group',
+        description: 'Thêm thành viên vào nhóm Facebook',
+        endpoint: '/api/facebook-mem-group/buy',
+        icon: 'Users',
+        color: '#14b8a6',
+        fields: [
+            { key: 'object_id', label: 'ID Group', type: 'text', placeholder: 'Nhập ID nhóm Facebook', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Nhập số lượng thành viên', required: true, min: 10 },
+        ],
+    },
+    {
+        id: 'mat-live',
+        name: 'Tăng Mắt Live',
+        description: 'Tăng người xem livestream trực tiếp',
+        endpoint: '/api/facebook-eyes/buy',
+        icon: 'Eye',
+        color: '#ef4444',
+        fields: [
+            { key: 'object_id', label: 'ID Livestream', type: 'text', placeholder: 'Nhập ID hoặc link livestream', required: true },
+            { key: 'quantity', label: 'Số mắt', type: 'number', placeholder: 'Nhập số lượng mắt live', required: true, min: 10 },
+            { key: 'num_minutes', label: 'Số phút', type: 'number', placeholder: 'Thời gian duy trì (phút)', required: true, min: 10 },
+        ],
+    },
+    {
+        id: 'share',
+        name: 'Tăng Share',
+        description: 'Chia sẻ bài viết ra nhiều tài khoản',
+        endpoint: '/api/facebook-share/buy',
+        icon: 'Share2',
+        color: '#f97316',
+        fields: [
+            { key: 'object_id', label: 'ID bài viết', type: 'text', placeholder: 'Nhập ID bài viết cần share', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Số lượng share', required: true, min: 10 },
+        ],
+    },
+    {
+        id: 'vip',
+        name: 'VIP Like Tháng',
+        description: 'Auto like hàng ngày trong thời gian dài',
+        endpoint: '/api/facebook-vip-clone/buy',
+        icon: 'Crown',
+        color: '#eab308',
+        fields: [
+            { key: 'object_id', label: 'Nhập Link', type: 'text', placeholder: 'Nhập Link profile Facebook', required: true },
+            { key: 'fb_name', label: 'Fb Name', type: 'text', placeholder: 'Nhập tên Facebook', required: false },
+            { key: 'num_day', label: 'Số ngày', type: 'select', placeholder: '', required: true },
+            { key: 'quantity', label: 'Số lượng like', type: 'select', placeholder: '', required: true },
+            { key: 'slbv', label: 'Số bài viết lên/ngày', type: 'select', placeholder: '', required: true },
+        ],
+    },
+];
+
+export const tiktokServices: ServiceConfig[] = [
+    {
+        id: 'tiktok-like',
+        name: 'Tăng Like',
+        description: 'Tăng like cho video TikTok',
+        endpoint: '/api/tiktok-like/buy',
+        icon: 'Heart',
+        color: '#ff2d55',
+        fields: [
+            { key: 'object_id', label: 'Link video', type: 'text', placeholder: 'Nhập link video TikTok', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Nhập số lượng like', required: true, min: 10 },
+        ],
+    },
+    {
+        id: 'tiktok-follow',
+        name: 'Tăng Follow',
+        description: 'Tăng người theo dõi TikTok',
+        endpoint: '/api/tiktok-follow/buy',
+        icon: 'UserPlus',
+        color: '#25f4ee',
+        fields: [
+            { key: 'object_id', label: 'Link profile', type: 'text', placeholder: 'Nhập link profile TikTok', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Nhập số lượng follow', required: true, min: 10 },
+        ],
+    },
+    {
+        id: 'tiktok-view',
+        name: 'Tăng View',
+        description: 'Tăng lượt xem video TikTok',
+        endpoint: '/api/tiktok-view/buy',
+        icon: 'Eye',
+        color: '#fe2c55',
+        fields: [
+            { key: 'object_id', label: 'Link video', type: 'text', placeholder: 'Nhập link video TikTok', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Nhập số lượng view', required: true, min: 100 },
+        ],
+    },
+    {
+        id: 'tiktok-save',
+        name: 'Tăng Save',
+        description: 'Tăng lượt lưu video TikTok',
+        endpoint: '/api/tiktok-save/buy',
+        icon: 'Bookmark',
+        color: '#ff6b6b',
+        fields: [
+            { key: 'object_id', label: 'Link video', type: 'text', placeholder: 'Nhập link video TikTok', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Nhập số lượng save', required: true, min: 10 },
+        ],
+    },
+    {
+        id: 'tiktok-comment',
+        name: 'Tăng Comment',
+        description: 'Buff bình luận cho video TikTok',
+        endpoint: '/api/tiktok-comment/buy',
+        icon: 'MessageSquareText',
+        color: '#ee1d52',
+        fields: [
+            { key: 'object_id', label: 'Link video', type: 'text', placeholder: 'Nhập link video TikTok', required: true },
+            { key: 'list_message', label: 'Nội dung bình luận', type: 'textarea', placeholder: 'Mỗi dòng là 1 bình luận\nVD: Video hay quá!\nỦng hộ!', required: true },
+        ],
+    },
+    {
+        id: 'tiktok-share',
+        name: 'Tăng Share',
+        description: 'Tăng lượt chia sẻ video TikTok',
+        endpoint: '/api/tiktok-share/buy',
+        icon: 'Share2',
+        color: '#69c9d0',
+        fields: [
+            { key: 'object_id', label: 'Link video', type: 'text', placeholder: 'Nhập link video TikTok', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Số lượng share', required: true, min: 10 },
+        ],
+    },
+    {
+        id: 'tiktok-live',
+        name: 'Tăng Mắt Live',
+        description: 'Tăng người xem livestream TikTok',
+        endpoint: '/api/tiktok-live/buy',
+        icon: 'Eye',
+        color: '#ff0050',
+        fields: [
+            { key: 'object_id', label: 'Link livestream', type: 'text', placeholder: 'Nhập link livestream TikTok', required: true },
+            { key: 'quantity', label: 'Số mắt', type: 'number', placeholder: 'Nhập số lượng mắt live', required: true, min: 10 },
+            { key: 'num_minutes', label: 'Số phút', type: 'number', placeholder: 'Thời gian duy trì (phút)', required: true, min: 10 },
+        ],
+    },
+    {
+        id: 'tiktok-vip-mat',
+        name: 'VIP Mắt TikTok',
+        description: 'Dịch vụ VIP mắt livestream TikTok',
+        endpoint: '/api/tiktok-vip-mat/buy',
+        icon: 'Crown',
+        color: '#ffd700',
+        fields: [
+            { key: 'object_id', label: 'Link profile', type: 'text', placeholder: 'Nhập link profile TikTok', required: true },
+            { key: 'quantity', label: 'Số mắt', type: 'select', placeholder: '', required: true },
+        ],
+    },
+];
+
+export const instagramServices: ServiceConfig[] = [
+    {
+        id: 'instagram-like',
+        name: 'Tăng Like',
+        description: 'Tăng like cho bài viết Instagram',
+        endpoint: '/api/instagram-like/buy',
+        icon: 'Heart',
+        color: '#e1306c',
+        fields: [
+            { key: 'object_id', label: 'Link bài viết', type: 'text', placeholder: 'Nhập link bài viết Instagram', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Nhập số lượng like', required: true, min: 10 },
+        ],
+    },
+    {
+        id: 'instagram-follow',
+        name: 'Tăng Follow',
+        description: 'Tăng người theo dõi Instagram',
+        endpoint: '/api/instagram-follow/buy',
+        icon: 'UserPlus',
+        color: '#833ab4',
+        fields: [
+            { key: 'object_id', label: 'Link profile', type: 'text', placeholder: 'Nhập link profile Instagram', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Nhập số lượng follow', required: true, min: 10 },
+        ],
+    },
+    {
+        id: 'instagram-comment',
+        name: 'Tăng Bình Luận',
+        description: 'Buff bình luận cho bài viết Instagram',
+        endpoint: '/api/instagram-comment/buy',
+        icon: 'MessageSquareText',
+        color: '#fd1d1d',
+        fields: [
+            { key: 'object_id', label: 'Link bài viết', type: 'text', placeholder: 'Nhập link bài viết Instagram', required: true },
+            { key: 'comment', label: 'Nội dung bình luận', type: 'textarea', placeholder: 'Nhập nội dung bình luận (mỗi dòng 1 bình luận)', required: true },
+        ],
+    },
+    {
+        id: 'instagram-view',
+        name: 'Tăng View + Live',
+        description: 'Tăng lượt xem video và livestream Instagram',
+        endpoint: '/api/instagram-view/buy',
+        icon: 'Eye',
+        color: '#f77737',
+        fields: [
+            { key: 'object_id', label: 'Link video/live', type: 'text', placeholder: 'Nhập link video hoặc LiveStream', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Nhập số lượng view', required: true, min: 100 },
+        ],
+    },
+    {
+        id: 'instagram-view-story',
+        name: 'Tăng View Story',
+        description: 'Tăng lượt xem story Instagram',
+        endpoint: '/api/instagram-view-story/buy',
+        icon: 'Eye',
+        color: '#fcaf45',
+        fields: [
+            { key: 'object_id', label: 'Link story', type: 'text', placeholder: 'Nhập link story Instagram', required: true },
+            { key: 'quantity', label: 'Số lượng', type: 'number', placeholder: 'Số lượng view story', required: true, min: 100 },
+        ],
+    },
+    {
+        id: 'instagram-vip-like',
+        name: 'VIP Like',
+        description: 'Dịch vụ VIP auto like Instagram',
+        endpoint: '/api/instagram-vip-like/buy',
+        icon: 'Crown',
+        color: '#ffd700',
+        fields: [
+            { key: 'object_id', label: 'Link profile', type: 'text', placeholder: 'Nhập link profile Instagram', required: true },
+            { key: 'num_day', label: 'Số ngày', type: 'select', placeholder: '', required: true },
+            { key: 'quantity', label: 'Số like/bài', type: 'select', placeholder: '', required: true },
+        ],
+    },
+];
+
+export const serviceCategories = {
+    facebook: facebookServices,
+    tiktok: tiktokServices,
+    instagram: instagramServices,
+};
